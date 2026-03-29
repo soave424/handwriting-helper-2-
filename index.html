@@ -67,8 +67,28 @@
 
     .controls h1 {
       font-size: 1.5rem;
-      margin-bottom: 1.5rem;
+      margin-bottom: 0.5rem; /* 간격 조정 */
       text-align: center;
+    }
+
+    /* 추가된 부제목(출처) 스타일 */
+    .controls h3 {
+      font-size: 0.9rem;
+      font-weight: 400;
+      color: #666;
+      text-align: center;
+      margin-bottom: 1.5rem;
+      word-break: keep-all;
+    }
+
+    .controls h3 a {
+      color: #4a90d9;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .controls h3 a:hover {
+      text-decoration: underline;
     }
 
     .input-group {
@@ -458,7 +478,8 @@
   <div class="app-layout">
     <div class="controls no-print">
       <h1>따라쓰기 학습지 생성기</h1>
-
+      <h3>이 프로그램은 <a href="https://handwrite.ssambox.com/" target="_blank">쌤박스의 따라쓰기 학습지 생성기</a>를 기반으로 만들어졌습니다.</h3>
+      
       <div class="input-group">
         <label for="textInput">연습할 문장 입력</label>
         <textarea id="textInput" rows="4" placeholder="여기에 연습할 문장을 입력하세요..."></textarea>
