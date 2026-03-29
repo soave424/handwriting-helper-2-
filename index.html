@@ -6,7 +6,7 @@
   <title>따라쓰기 학습지 생성기</title>
   <style>
     /* ===== Fonts ===== */
-    @import url('https://fonts.googleapis.com/css2?family=Gowun+Batang&family=Nanum+Myeongjo&family=Noto+Serif+KR&family=Song+Myung&family=Yeon+Sung&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Dongle&family=Gamja+Flower&family=Gowun+Batang&family=Gowun+Dodum&family=Jua&family=Nanum+Myeongjo&family=Nanum+Pen+Script&family=Noto+Serif+KR&family=Song+Myung&family=Yeon+Sung&display=swap');
 
     /* ===== Reset & Base ===== */
     *, *::before, *::after {
@@ -508,8 +508,13 @@
           <button type="button" class="font-btn active" data-font="'Noto Serif KR', serif" style="font-family:'Noto Serif KR',serif">노토 세리프</button>
           <button type="button" class="font-btn" data-font="'Nanum Myeongjo', serif" style="font-family:'Nanum Myeongjo',serif">나눔명조</button>
           <button type="button" class="font-btn" data-font="'Gowun Batang', serif" style="font-family:'Gowun Batang',serif">고운바탕</button>
+          <button type="button" class="font-btn" data-font="'궁서', 'Gungsuh', serif" style="font-family:'궁서', 'Gungsuh', serif">궁서</button>
+          <button type="button" class="font-btn" data-font="'Gowun Dodum', sans-serif" style="font-family:'Gowun Dodum',sans-serif">고운돋움</button>
           <button type="button" class="font-btn" data-font="'Song Myung', serif" style="font-family:'Song Myung',serif">송명</button>
           <button type="button" class="font-btn" data-font="'Yeon Sung', cursive" style="font-family:'Yeon Sung',cursive">연성</button>
+          <button type="button" class="font-btn" data-font="'Nanum Pen Script', cursive" style="font-family:'Nanum Pen Script',cursive">나눔손글씨</button>
+          <button type="button" class="font-btn" data-font="'Jua', sans-serif" style="font-family:'Jua',sans-serif">주아</button>
+          <button type="button" class="font-btn" data-font="'Gamja Flower', cursive" style="font-family:'Gamja Flower',cursive">감자꽃</button>
         </div>
       </div>
 
@@ -753,12 +758,27 @@
 
     // ===== Grid Rendering =====
 
+    // 폰트별 특성(크기, 굵기, 수직 정렬)을 세밀하게 보정하는 함수
+    function getFontConfig(fontFamily) {
+      const config = { scale: 1, paddingTop: '0', fontWeight: '400' };
+      if (fontFamily.includes('궁서') || fontFamily.includes('Gungsuh')) {
+        config.paddingTop = '2.5%'; // 6%에서 줄임 (위로 살짝 올림)
+        config.fontWeight = '700';  // 두께 강화
+      } else if (fontFamily.includes('Nanum Myeongjo')) {
+        config.paddingTop = '2%';   // 위로 치우친 기준선을 아래로 살짝 내림
+      } else if (fontFamily.includes('Nanum Pen Script')) {
+        config.scale = 1.35;        // 손글씨 폰트는 작아 보이므로 35% 확대
+        config.paddingTop = '1%';   // 살짝 내림
+      }
+      return config;
+    }
+
     function computeCellSize(cols) {
       const maxWidthMm = 180;
       return Math.floor(maxWidthMm / cols);
     }
 
-    function populateCell(cell, tokenObj, cellSizeMm) {
+    function populateCell(cell, tokenObj, cellSizeMm, fontConfig) {
       if (!tokenObj) return;
 
       const text = tokenObj.text;
@@ -834,7 +854,7 @@
             cell.appendChild(wrapper);
           } else {
             cell.textContent = text;
-            cell.style.fontSize = (cellSizeMm * 0.4) + 'mm';
+            cell.style.fontSize = (cellSizeMm * 0.4 * fontConfig.scale) + 'mm';
             cell.style.letterSpacing = '-0.05em';
           }
         }
@@ -851,14 +871,17 @@
     function createGridRow(tokens, cols, cellSizeMm, cellType, fontFamily, textColor) {
       const rowDiv = document.createElement('div');
       rowDiv.className = 'grid-row';
+      const fontConfig = getFontConfig(fontFamily);
 
       for (let c = 0; c < cols; c++) {
         const cell = document.createElement('div');
         cell.className = `grid-cell ${cellType}`;
         cell.style.width = cellSizeMm + 'mm';
         cell.style.height = cellSizeMm + 'mm';
-        cell.style.fontSize = (cellSizeMm * 0.6) + 'mm';
+        cell.style.fontSize = (cellSizeMm * 0.6 * fontConfig.scale) + 'mm';
         cell.style.fontFamily = fontFamily;
+        cell.style.fontWeight = fontConfig.fontWeight;
+        cell.style.paddingTop = fontConfig.paddingTop;
 
         if (cellType === 'cell-main' && textColor) {
           cell.style.color = textColor;
@@ -869,7 +892,7 @@
           if (cellType !== 'cell-main' && renderToken.vMark) {
             renderToken = { text: renderToken.text, vMark: false };
           }
-          populateCell(cell, renderToken, cellSizeMm);
+          populateCell(cell, renderToken, cellSizeMm, fontConfig);
         }
         rowDiv.appendChild(cell);
       }
