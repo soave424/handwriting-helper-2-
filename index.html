@@ -375,10 +375,13 @@
           margin: 0;
         }
 
+        html,
         body {
           background: #fff;
           -webkit-print-color-adjust: exact;
           print-color-adjust: exact;
+          margin: 0 !important;
+          padding: 0 !important;
         }
 
         .no-print {
@@ -387,6 +390,8 @@
 
         .app-layout {
           display: block;
+          padding: 0 !important; /* 추가 여백 완전 제거 */
+          margin: 0 !important;
         }
 
         .sheet-title-print {
@@ -394,13 +399,14 @@
         }
 
         #output {
-          margin: 0;
+          margin: 0 !important;
+          padding: 0 !important;
           max-width: none;
         }
 
         .sheet {
           width: 210mm;
-          height: 297mm;
+          height: 296.5mm; /* 297mm에서 미세하게 줄여 넘침 방지 */
           padding: 15mm;
           margin: 0;
           box-shadow: none;
@@ -408,10 +414,12 @@
           page-break-inside: avoid;
           display: flex;
           flex-direction: column;
+          overflow: hidden; /* 보이지 않는 픽셀 오버플로우 방지 */
+          box-sizing: border-box;
         }
 
         .sheet:last-child {
-          page-break-after: auto;
+          page-break-after: auto; /* 마지막 페이지 뒤엔 페이지 나눔 금지 */
         }
 
         .grid-row {
@@ -1118,7 +1126,14 @@
           if (title) {
             const titleEl = document.createElement("div");
             titleEl.className = "sheet-title";
-            titleEl.textContent = title;
+
+            // 총 페이지가 1장이 넘을 경우에만 제목 뒤에 (1), (2) 번호 추가
+            if (totalPages > 1) {
+              titleEl.textContent = `${title} (${pageIndex + 1})`;
+            } else {
+              titleEl.textContent = title;
+            }
+
             titleEl.style.fontFamily = fontFamily;
             sheet.appendChild(titleEl);
           }
